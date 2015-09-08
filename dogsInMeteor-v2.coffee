@@ -7,8 +7,6 @@ if Meteor.isClient
   Template.body.helpers
     current:->
       Session.get 'currentTemplate'
-    dog:->
-      Session.get 'currentDogId'
     index:->
       if (Session.get 'currentTemplate') == 'index' then true else false
     new:->
@@ -24,34 +22,56 @@ if Meteor.isClient
   Template.dogIndex.events
     "click #add-new":->
       Session.set 'currentTemplate','new'
-    "click .edit":->
-      Session.set "currentTemplate", "edit"
+    "click .edit":(event)->
       Session.set "currentDogId", this._id
+      Session.set "currentTemplate", "edit"
+    "click .delete":->
+      if confirm("Are you sure you want to delete?")
+        Dogs.remove this._id
+
 
   #EDIT DOG
   Template.editDog.helpers
     currentDog:->
-      id = Session.get 'currentDogId'
-      console.log id
-
+      id = (Session.get 'currentDogId')
+      
       Dogs.findOne
         _id:id
 
-  ##############TODO need to fix findOne function for mongo###########3
+
   Template.editDog.events
     "click .back":->
       Session.set 'currentTemplate', 'index'
     "submit form":(event)->
       event.preventDefault()
-      console.log 'here'
+      id = (Session.get 'currentDogId')
+
       Dogs.update
-        _id: Session.get 'currentDogId'
+        _id: id
+      ,
         $set:
           name:event.target.name.value
           age: event.target.age.value
           breed: event.target.breed.value
+
       Session.set 'currentTemplate', 'index'
-      console.log 'end'
+      false
+
+  ###############Add New######################
+  Template.addDog.events
+    "submit form":(event)->
+      name = event.target.dogname.value
+      age = event.target.age.value
+      breed = event.target.breed.value
+
+      newDog = 
+        name:name
+        age:age
+        breed:breed
+        createdAt: new Date()
+
+      Dogs.insert newDog
+      Session.set 'currentTemplate', 'index'
       false
 
 if Meteor.isServer

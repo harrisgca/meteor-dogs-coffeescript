@@ -47,6 +47,7 @@
         <td>
           <button name="{{_id}}" class="delete btn btn-danger">Delete</button>
         </td>
+        <td>{{_id}}</td>
       </tr>
       {{/each}}
     </tbody>
@@ -69,7 +70,6 @@
 </template>
 
 <template name="editDog">
-Current Dog is {{currentDog}}
   <form class="form-group">
     Name:
     <input class="form-control" type="text" name="name" value="{{currentDog.name}}"/><br>
